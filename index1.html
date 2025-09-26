@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+     <meta charset="UTF-8">
+     <title>kill fish</title>
+     <link rel="stylesheet" href="style.css">
+     <style>
+          body {
+               background-image: url('img/bg.png');
+               cursor: crosshair;
+               min-height: 100vh;
+               margin: 0;
+               display: flex;
+               flex-direction: column;
+               align-items: center;
+               justify-content: center;
+          }
+          .main-title {
+               font-family: Impact, sans-serif;
+               font-size: 4em;
+               color: #1a237e;
+               margin-top: 30px;
+               margin-bottom: 10px;
+               letter-spacing: 2px;
+          }
+          .mywave {
+               display: flex;
+               flex-direction: column;
+               align-items: center;
+               justify-content: center;
+               margin-bottom: 0;
+          }
+          .plate-container {
+               position: relative;
+               display: flex;
+               justify-content: center;
+               align-items: center;
+          }
+          .plate {
+               display: block;
+               width: 900px;
+               height: auto;
+               object-fit: contain;
+               aspect-ratio: 1/1;
+          }
+          .fish-on-plate {
+               position: absolute;
+               left: 50%;
+               top: 50%;
+               transform: translate(-50%, -50%);
+               width: 1000px;
+               height: auto;
+               pointer-events: auto;
+               opacity: 0;
+          }
+     </style>
+</head>
+<body>
+     <h1 class="main-title">kill fish</h1>
+     <div class="mywave">
+          <div class="plate-container" style="display: flex; justify-content: center; position: relative;">
+               <img src="img/6.png" alt="fish plate" class="plate">
+               <img id="sashimi" src="img/in01.png" alt="sashimi" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 800px; height: auto; pointer-events: none;">
+               
+          </div>
+          <div id="resultText" style="font-family: Impact, sans-serif; font-size: 5em; color: #d32f2f; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: none; pointer-events: none; white-space: nowrap;">Too lame, no food for you!</div>
+      </div>
+<script>
+function getScoreFromUrl() {
+     const params = new URLSearchParams(window.location.search);
+     return parseInt(params.get('score')) || 0;
+}
+
+const score = getScoreFromUrl();
+const sashimi = document.getElementById('sashimi');
+const resultText = document.getElementById('resultText');
+
+if (score < 10) {
+     sashimi.style.display = 'none';
+     resultText.style.display = 'block';
+} else if (score < 30) {
+     sashimi.src = 'img/in01.png';
+     sashimi.alt = 'sashimi 1';
+     resultText.style.display = 'none';
+} else if (score < 60) {
+     sashimi.src = 'img/in02.png';
+     sashimi.alt = 'sashimi 2';
+     resultText.style.display = 'none';
+} else {
+     sashimi.src = 'img/in03.png';
+     sashimi.alt = 'sashimi 3';
+     resultText.style.display = 'none';
+}
+</script>
+</body>
+</html>

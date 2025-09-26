@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+     <meta charset="UTF-8">
+     <title>kill fish</title>
+     <link rel="stylesheet" href="style.css">
+     <style>
+          body {
+               background-image: url('img/bg.png');
+               cursor: crosshair;
+                   min-height: 100vh;
+                   margin: 0;
+                   display: flex;
+                   flex-direction: column;
+                   align-items: center;
+                   justify-content: center;
+          }
+          .main-title {
+               font-family: Impact, sans-serif;
+               font-size: 4em;
+               color: #1a237e;
+               margin-top: 30px;
+               margin-bottom: 10px;
+               letter-spacing: 2px;
+          }
+          .score-board {
+               font-size: 2em;
+               color: #388e3c;
+               margin-bottom: 10px;
+               font-family: Impact, sans-serif;
+          }
+          .timer {
+               font-size: 1.5em;
+               color: #1976d2;
+               margin-bottom: 10px;
+               font-family: Impact, sans-serif;
+          }
+                    .plate {
+                         
+                         display: block;
+                         width: 900px;
+                         height: auto;
+                    }
+                              .fish-on-plate {
+                                   position: absolute;
+                                   left: 50%;
+                                   top: 50%;
+                                   transform: translate(-50%, -50%);
+                                   width: 1000px;
+                                   height: auto;
+                                   pointer-events: auto;
+                                   object-fit: contain;
+                                   aspect-ratio: 1/1;
+                              }
+                         height: auto;
+                    }
+                    
+          .shakeimage {
+               transition: box-shadow 0.2s;
+          }
+          .fish-text {
+               font-family: Impact, sans-serif;
+               font-size: 3em;
+               color: #FF0000;
+               margin-top: 16px;
+               margin-bottom: 0;
+          }
+     </style>
+</head>
+<body>
+     <h1 class="main-title">kill fish</h1>
+     <div class="score-board" id="scoreBoard">Score: 0</div>
+     <div class="timer" id="timer">Time: 10</div>
+     <div class="mywave">
+          <div class="plate-container" style="display: flex; justify-content: center; position: relative;">
+               <img src="img/6.png" alt="fish plate" class="plate">
+               <img id="fish" src="img/fish.png" alt="kill me!!" class="shakeimage fish-on-plate">
+          </div>
+          <div class="fish-text">Please keep touching me, it makes me feel more excited!!</div>
+     </div>
+     <script>
+          const fish = document.getElementById('fish');
+          const fishNormal = 'img/fish.png';
+          const fishHit = 'img/fishhit.png';
+          let shaking = false;
+          let shakeDegree = 16;
+          let shakeStep = 1;
+          let shakeAnimationId = null;
+          let originTransform = '';
+          let score = 0;
+          let timeLeft = 10;
+          let timerInterval = null;
+          const scoreBoard = document.getElementById('scoreBoard');
+          const timerDisplay = document.getElementById('timer');
+
+          // 音效
+          const hitSound = new Audio('https://cdn.pixabay.com/audio/2022/03/15/audio_115b6c7b7b.mp3'); // 可換成本地音效
+
+          function shakeImage() {
+               if (!shaking) return;
+               let x = 0, y = 0;
+               switch (shakeStep) {
+                    case 1: y += shakeDegree; break;
+                    case 2: x += shakeDegree; break;
+                    case 3: y -= shakeDegree; break;
+                    case 4: x -= shakeDegree; break;
+               }
+               fish.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+               shakeStep = shakeStep < 4 ? shakeStep + 1 : 1;
+               shakeAnimationId = requestAnimationFrame(shakeImage);
+          }
+
+          function startShake() {
+               if (shaking) return;
+               originTransform = fish.style.transform || 'translate(-50%, -50%)';
+               shaking = true;
+               shakeStep = 1;
+               shakeImage();
+          }
+
+          function stopShake() {
+               shaking = false;
+               if (shakeAnimationId) cancelAnimationFrame(shakeAnimationId);
+               fish.style.transform = originTransform;
+          }
+
+          function startGame() {
+               score = 0;
+               timeLeft = 10;
+               scoreBoard.textContent = 'Score: 0';
+               timerDisplay.textContent = 'Time: 10';
+               if (timerInterval) clearInterval(timerInterval);
+               timerInterval = setInterval(() => {
+                    timeLeft--;
+                    timerDisplay.textContent = 'Time: ' + timeLeft;
+                    if (timeLeft <= 0) {
+                         clearInterval(timerInterval);
+                         timerDisplay.textContent = 'Time up!';
+                         fish.removeEventListener('mousedown', hitFish);
+                         setTimeout(function() {
+                              window.location.href = 'index1.html?score=' + score;
+                         }, 1200);
+                    }
+               }, 1000);
+               fish.addEventListener('mousedown', hitFish);
+          }
+
+          function hitFish() {
+               if (timeLeft <= 0) return;
+               score++;
+               scoreBoard.textContent = 'Score: ' + score;
+               fish.src = fishHit;
+               hitSound.currentTime = 0;
+               hitSound.play();
+               setTimeout(() => {
+                    fish.src = fishNormal;
+               }, 120);
+          }
+
+          fish.addEventListener('mouseover', startShake);
+          fish.addEventListener('mouseout', stopShake);
+          fish.addEventListener('mouseup', function() {
+               fish.src = fishNormal;
+          });
+          fish.addEventListener('mouseleave', function() {
+               fish.src = fishNormal;
+               stopShake();
+          });
+          // 計時結束後跳頁
+          function goToResultPage() {
+               window.location.href = 'index1.html';
+          }
+
+          // 遊戲開始
+          window.onload = startGame;
+
+          // 修改計時結束行為
+          function endGame() {
+               clearInterval(timerInterval);
+               timerDisplay.textContent = 'Time up!';
+               fish.removeEventListener('mousedown', hitFish);
+               setTimeout(goToResultPage, 1200); // 1.2秒後跳頁
+          }
+
+          // 替換 startGame 內的計時結束行為
+          // ...existing code...
+          // timerInterval = setInterval(() => {
+          //      timeLeft--;
+          //      timerDisplay.textContent = 'Time: ' + timeLeft;
+          //      if (timeLeft <= 0) {
+          //           clearInterval(timerInterval);
+          //           timerDisplay.textContent = 'Time up!';
+          //           fish.removeEventListener('mousedown', hitFish);
+          //      }
+          // }, 1000);
+          // ...existing code...
+
+          // 遊戲開始
+          window.onload = startGame;
+     </script>
+</body>
+</html>
