@@ -78,7 +78,13 @@
           </div>
           <div class="fish-text">Please keep touching me, it makes me feel more excited!!</div>
      </div>
-     <script>
+      <script>
+      // 確保每次進入頁面都刷新分數與倒時
+      window.onpageshow = function(event) {
+           if (event.persisted) {
+                window.location.reload();
+           }
+      };
           const fish = document.getElementById('fish');
           const fishNormal = 'img/fish.png';
           const fishHit = 'img/fishhit.png';
@@ -139,7 +145,7 @@
                          fish.removeEventListener('mousedown', hitFish);
                          setTimeout(function() {
                               window.location.href = 'index1.html?score=' + score;
-                         }, 1200);
+                         }, 500);
                     }
                }, 1000);
                fish.addEventListener('mousedown', hitFish);
@@ -179,7 +185,7 @@
                clearInterval(timerInterval);
                timerDisplay.textContent = 'Time up!';
                fish.removeEventListener('mousedown', hitFish);
-               setTimeout(goToResultPage, 1200); // 1.2秒後跳頁
+               setTimeout(goToResultPage, 500); // 0.5秒後跳頁
           }
 
           // 替換 startGame 內的計時結束行為
